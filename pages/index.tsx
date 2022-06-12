@@ -9,14 +9,12 @@ const Home: NextPage = () => {
         <title>Clone apple note</title>
         <meta
           name="description"
-          content="Clone apple note with nextJs and tailwind"
+          content="Clone apple note with nextJS and tailwind"
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className={styles.main}>
-        <h1 className="text-3xl font-bold underline">Hello world!</h1>
-      </main>
+      <main className={styles.main}></main>
     </div>
   );
 };

@@ -21,9 +21,9 @@ export const CardNote: React.FC<ICardProps> = (props) => {
 
   return (
     <div
-      className={`container mb-2 mx-auto py-3 px-5 bg-slate-500 rounded-lg ${
-        styles.card
-      } ${isActive ? styles.cardActive : ""}`}
+      className={`container mb-4 mx-auto py-3 px-5 rounded-lg ${styles.card} ${
+        isActive ? styles.cardActive : ""
+      }`}
       onClick={onClickCard}
     >
       <h2>{title}</h2>

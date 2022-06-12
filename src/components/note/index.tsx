@@ -1,8 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { LayoutProps } from "../../share/interface";
 import { ICardProps } from "../card-note";
 import AppleNoteContainer from "./containers/note-container";
-import NoteContent from "./containers/note-content";
-import NoteList, { INoteList } from "./containers/note-list";
+import UiForList from "./containers/ui-for-list";
+
+export interface INoteListComponent extends LayoutProps {
+  listCard: ICardProps[];
+}
 
 const listCardDefault: ICardProps[] = [
   {
@@ -19,8 +23,15 @@ const listCardDefault: ICardProps[] = [
   },
 ];
 
-const AppleNoteComponent: React.FC<INoteList> = ({ listCard }) => {
+const AppleNoteComponent: React.FC<INoteListComponent> = ({ listCard }) => {
   const [list, setList] = useState(listCardDefault);
+  const [isList, setIsList] = useState(true);
+
+  useEffect(() => {
+    if (listCard.length) {
+      setList(listCard);
+    }
+  }, [listCard, listCard.length]);
 
   const onClickRemoveCard = (id: string | undefined) => {
     if (list.length) {
@@ -33,12 +44,15 @@ const AppleNoteComponent: React.FC<INoteList> = ({ listCard }) => {
 
   return (
     <AppleNoteContainer>
-      <div className="basis-1/3 px-2 border-r-2 border-gray-500">
-        <NoteList listCard={list} onClickRemoveCard={onClickRemoveCard} />
-      </div>
-      <div className="basis-2/3 px-2">
-        <NoteContent />
-      </div>
+      {isList ? (
+        <UiForList
+          listCard={list}
+          setIsList={setIsList}
+          onClickRemoveCard={onClickRemoveCard}
+        />
+      ) : (
+        ""
+      )}
     </AppleNoteContainer>
   );
 };

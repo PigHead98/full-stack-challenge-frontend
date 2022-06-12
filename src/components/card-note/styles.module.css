@@ -2,8 +2,12 @@
   cursor: pointer;
 }
 
+.card {
+  background-color: rgb(186 187 207 / 50%);
+}
+
 .cardActive {
-  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 0px 15px;
 }
 
 .description {

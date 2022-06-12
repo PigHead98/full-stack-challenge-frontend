@@ -3,7 +3,7 @@ import AppleNoteComponent from "../src/components/note";
 const AppleNote = () => {
   return (
     <>
-      <AppleNoteComponent>content</AppleNoteComponent>
+      <AppleNoteComponent listCard={[]}>content</AppleNoteComponent>
     </>
   );
 };

@@ -1,18 +1,31 @@
 import styles from "./styles.module.css";
 
-export interface CardProps {
+export interface ICardProps {
+  id: string;
   title: string;
   description?: string;
   time: string;
+  onClickCard?: any;
+  isActive?: boolean;
+  cardActive?: string;
 }
 
-export const CardNote = ({
-  title,
-  description = "No Description",
-  time,
-}: CardProps) => {
+export const CardNote: React.FC<ICardProps> = (props) => {
+  const {
+    title,
+    description = "No Description",
+    time,
+    onClickCard,
+    isActive,
+  } = props;
+
   return (
-    <div className="container mb-2 mx-auto py-3 px-5 bg-slate-500 rounded-lg">
+    <div
+      className={`container mb-2 mx-auto py-3 px-5 bg-slate-500 rounded-lg ${
+        styles.card
+      } ${isActive ? styles.cardActive : ""}`}
+      onClick={onClickCard}
+    >
       <h2>{title}</h2>
 
       <p>

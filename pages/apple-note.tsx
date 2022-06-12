@@ -1,9 +1,9 @@
-import AppleNoteContainer from "../src/containers/note-container";
+import AppleNoteComponent from "../src/components/note";
 
 const AppleNote = () => {
   return (
     <>
-      <AppleNoteContainer>content</AppleNoteContainer>
+      <AppleNoteComponent>content</AppleNoteComponent>
     </>
   );
 };

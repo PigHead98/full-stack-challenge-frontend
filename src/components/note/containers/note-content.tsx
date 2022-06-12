@@ -1,6 +1,6 @@
 import React from "react";
 
-const NoteContentComponent = () => {
+const NoteContent = () => {
   return (
     <>
       <div className="container mx-auto">
@@ -13,4 +13,4 @@ const NoteContentComponent = () => {
     </>
   );
 };
-export default NoteContentComponent;
+export default NoteContent;

@@ -1,27 +1,26 @@
-import React from "react";
-import { LayoutProps } from "../../../share/interface";
-import { ICardProps } from "../../card-note";
+import React, { useContext } from "react";
+import NoteContext from "../../../contexts/NoteContext";
+import { ILayoutProps } from "../../../share/interface";
+import { CardNote } from "../../card-note";
 
-export interface INoteListComponent extends LayoutProps {
-  listCard: ICardProps[];
-  setIsList: (value: boolean) => void;
-}
+export interface INoteForGridContainer extends ILayoutProps {}
 
-const UiForGrid: React.FC<INoteListComponent> = ({ listCard, setIsList }) => {
+const UiForGrid: React.FC<INoteForGridContainer> = (components) => {
+  const { noteData, noteAction } = useContext(NoteContext);
+
   return (
-    <>
-      1222
-      {/* <div className="basis-1/3 px-2 border-r-2 border-gray-500">
-        <NoteList
-          listCard={list}
-          onClickRemoveCard={onClickRemoveCard}
-          setIsList={setIsList}
-        />
-      </div>
-      <div className="basis-2/3 px-2">
-        <NoteContent />
-      </div> */}
-    </>
+    <div className="flex flex-wrap">
+      {noteData.list &&
+        noteData.list.map((i, index) => (
+          <div className="basis-1/3 px-2" key={`listCard_${index}`}>
+            <CardNote
+              {...i}
+              isActive={noteData.cardActive === i.id}
+              onClickCard={noteAction.handleClickCard(i)}
+            />
+          </div>
+        ))}
+    </div>
   );
 };
 export default UiForGrid;

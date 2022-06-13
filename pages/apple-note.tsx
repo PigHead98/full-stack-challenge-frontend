@@ -1,10 +1,11 @@
 import AppleNoteComponent from "../src/components/note";
+import { NoteProvider } from "../src/contexts/NoteContext";
 
 const AppleNote = () => {
   return (
-    <>
-      <AppleNoteComponent listCard={[]}>content</AppleNoteComponent>
-    </>
+    <NoteProvider>
+      <AppleNoteComponent>content</AppleNoteComponent>
+    </NoteProvider>
   );
 };
 export default AppleNote;

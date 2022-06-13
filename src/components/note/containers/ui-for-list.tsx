@@ -1,33 +1,20 @@
 import React from "react";
-import { LayoutProps } from "../../../share/interface";
-import { ICardProps } from "../../card-note";
-import NoteContent from "./note-content";
-import NoteList from "./note-list";
+import { ILayoutProps } from "../../../share/interface";
+import NoteContent from "../note-content";
+import NoteList from "../note-list";
 
-export interface INoteListComponent extends LayoutProps {
-  listCard: ICardProps[];
-  setIsList: (value: boolean) => void;
-  onClickRemoveCard?: (index: string | undefined) => void;
-}
+export interface INoteForListContainer extends ILayoutProps {}
 
-const UiForList: React.FC<INoteListComponent> = ({
-  listCard,
-  setIsList,
-  onClickRemoveCard,
-}) => {
+const UiForList: React.FC<INoteForListContainer> = (components) => {
   return (
-    <>
+    <div className="flex h-full flex-row">
       <div className="basis-1/3 px-2 border-r-2 border-gray-500">
-        <NoteList
-          listCard={listCard}
-          onClickRemoveCard={onClickRemoveCard}
-          setIsList={setIsList}
-        />
+        <NoteList />
       </div>
       <div className="basis-2/3 px-2">
         <NoteContent />
       </div>
-    </>
+    </div>
   );
 };
 export default UiForList;

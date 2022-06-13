@@ -3,14 +3,14 @@
 }
 
 .card {
-  background-color: rgb(186 187 207 / 50%);
+  background-color: rgb(124 128 212 / 50%);
 }
 
 .cardActive {
-  box-shadow: rgba(0, 0, 0, 0.35) 0px 0px 15px;
+  box-shadow: rgb(226 226 226 / 55%) 0px 0px 15px;
 }
 
 .description {
   font-size: 12px;
-  color: gray;
+  color: #cfcfcf;
 }

@@ -1,59 +1,22 @@
-import React, { useEffect, useState } from "react";
-import { LayoutProps } from "../../share/interface";
-import { ICardProps } from "../card-note";
+import React, { useContext } from "react";
+import NoteContext from "../../contexts/NoteContext";
+import { ILayoutProps } from "../../share/interface";
 import AppleNoteContainer from "./containers/note-container";
+import UiForGrid from "./containers/ui-for-grid";
 import UiForList from "./containers/ui-for-list";
+import NoteHeader from "./note-header";
 
-export interface INoteListComponent extends LayoutProps {
-  listCard: ICardProps[];
-}
+export interface INoteListComponent extends ILayoutProps {}
 
-const listCardDefault: ICardProps[] = [
-  {
-    id: "0",
-    title: "Title test",
-    time: "1:22 PM",
-    description: "Description test",
-  },
-  {
-    id: "1",
-    title: "Title test 2",
-    time: "1:22 PM",
-    description: "Description test 2",
-  },
-];
-
-const AppleNoteComponent: React.FC<INoteListComponent> = ({ listCard }) => {
-  const [list, setList] = useState(listCardDefault);
-  const [isList, setIsList] = useState(true);
-
-  useEffect(() => {
-    if (listCard.length) {
-      setList(listCard);
-    }
-  }, [listCard, listCard.length]);
-
-  const onClickRemoveCard = (id: string | undefined) => {
-    if (list.length) {
-      const index = list.findIndex((i) => i.id === id);
-      setList((list) => {
-        return [...list.slice(0, index), ...list.slice(index + 1)];
-      });
-    }
-  };
+const ReconstructContainer = AppleNoteContainer(NoteHeader);
+const AppleNoteComponent: React.FC<INoteListComponent> = () => {
+  const { noteData } = useContext(NoteContext);
 
   return (
-    <AppleNoteContainer>
-      {isList ? (
-        <UiForList
-          listCard={list}
-          setIsList={setIsList}
-          onClickRemoveCard={onClickRemoveCard}
-        />
-      ) : (
-        ""
-      )}
-    </AppleNoteContainer>
+    <ReconstructContainer>
+      {noteData.switchUI === 1 && <UiForList />}
+      {noteData.switchUI === 2 && <UiForGrid />}
+    </ReconstructContainer>
   );
 };
 export default AppleNoteComponent;

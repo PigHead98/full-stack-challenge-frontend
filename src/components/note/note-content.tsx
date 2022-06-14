@@ -21,6 +21,7 @@ const NoteContent: React.FC<INoteContentComponent> = () => {
             className={`h-full w-full ${styles.textarea}`}
             value={value}
             onChange={handleChange}
+            onFocus={noteAction.handleFocusContent}
           />
         </div>
 

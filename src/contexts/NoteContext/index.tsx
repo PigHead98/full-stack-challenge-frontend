@@ -4,10 +4,8 @@ export interface ICard {
   id: string;
   title: string;
   description?: string;
-  time: string;
-  onClickCard?: any;
-  isActive?: boolean;
-  cardActive?: string;
+  time: string | Date;
+  value?: string;
 }
 
 interface IDefaultContext {
@@ -22,6 +20,7 @@ interface IDefaultContext {
     setCardActive: (id: string | undefined) => void;
     handleClickCard: (card: ICard) => void;
     handleClickAdd: () => void;
+    handleFocusContent: () => void;
   };
 }
 
@@ -31,15 +30,10 @@ const defaultValue: IDefaultContext = {
     list: [
       {
         id: "0",
-        title: "Title test",
-        time: "1:22 PM",
-        description: "Description test",
-      },
-      {
-        id: "1",
-        title: "Title test",
-        time: "1:22 PM",
-        description: "Description test",
+        title: "",
+        time: new Date(),
+        description: "",
+        value: "",
       },
     ],
   },
@@ -50,6 +44,7 @@ const defaultValue: IDefaultContext = {
     setCardActive: (id) => {},
     handleClickCard: (data) => {},
     handleClickAdd: () => {},
+    handleFocusContent: () => {},
   },
 };
 
@@ -58,6 +53,9 @@ const NoteContext = createContext(defaultValue);
 export const NoteProvider = ({ children }: any) => {
   const [switchUI, setSwitchUI] = useState(1);
   const [list, setList] = useState([...defaultValue.noteData.list]);
+  const [listTextarea, setListTextarea] = useState([
+    ...defaultValue.noteData.list,
+  ]);
   const [cardActive, setCardActive] = useState<string | undefined>(undefined);
 
   const onClickRemoveCard = (id: string | undefined) => {
@@ -72,6 +70,7 @@ export const NoteProvider = ({ children }: any) => {
   const handleClickRemove = () => {
     if (cardActive) {
       onClickRemoveCard(cardActive);
+      setCardActive(undefined);
     }
   };
 
@@ -84,7 +83,17 @@ export const NoteProvider = ({ children }: any) => {
   };
 
   const handleClickAdd = () => {
-    setList([...list, defaultValue.noteData.list[0]]);
+    const dataNew = {
+      ...defaultValue.noteData.list[0],
+      id: list.length.toString(),
+    };
+    setList([...list, dataNew]);
+  };
+
+  const handleFocusContent = () => {
+    if (!list.length) {
+      setList([...defaultValue.noteData.list]);
+    }
   };
 
   const value = {
@@ -99,6 +108,7 @@ export const NoteProvider = ({ children }: any) => {
       setSwitchUI,
       handleClickCard,
       handleClickAdd,
+      handleFocusContent,
     },
   };
 

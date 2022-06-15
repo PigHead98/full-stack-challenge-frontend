@@ -16,7 +16,7 @@ const NoteList: React.FC<INoteListComponent> = () => {
             noteData.list.map((i, index) => (
               <CardNote
                 {...i}
-                isActive={noteData.cardActive === i.id}
+                isActive={noteData.cardActive === i.uuid}
                 key={`listCard_${index}`}
                 onClickCard={noteAction.handleClickCard(i)}
               />

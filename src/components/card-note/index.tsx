@@ -1,11 +1,8 @@
 import moment from "moment";
+import { ICard } from "../note/interface";
 import styles from "./styles.module.css";
 
-export interface ICardProps {
-  id: string;
-  title: string;
-  description?: string;
-  time: string | Date;
+export interface ICardProps extends ICard {
   onClickCard?: any;
   isActive?: boolean;
   cardActive?: string;
@@ -27,12 +24,11 @@ export const CardNote: React.FC<ICardProps> = (props) => {
       }`}
       onClick={onClickCard}
     >
-      <h2>{title.substring(0, 20) || "New Note"}</h2>
-
+      <div className={styles.title}>{title.substring(0, 20) || "New Note"}</div>
       <p>
         <span>{moment(time).format("hh:mm A")}</span> &nbsp;&nbsp;
-        <span className={styles.description}>
-          {description.substring(0, 20) || "No Additional text"}
+        <span className={[styles.description].join(" ")}>
+          {description.substring(0, 16) || "No Additional text"}
         </span>
       </p>
     </div>

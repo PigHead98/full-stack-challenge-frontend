@@ -1,118 +1,201 @@
-import { createContext, useState } from "react";
-
-export interface ICard {
-  id: string;
-  title: string;
-  description?: string;
-  time: string | Date;
-  value?: string;
-}
-
-interface IDefaultContext {
-  noteData: {
-    switchUI: number;
-    list: ICard[];
-    cardActive?: string;
-  };
-  noteAction: {
-    setSwitchUI: (number: number) => void;
-    handleClickRemove: () => void;
-    setCardActive: (id: string | undefined) => void;
-    handleClickCard: (card: ICard) => void;
-    handleClickAdd: () => void;
-    handleFocusContent: () => void;
-  };
-}
+import { useMutation, useQuery } from "@apollo/client";
+import { createContext, useEffect, useState } from "react";
+import { useAlert } from "react-alert";
+import { v4 as uuid } from "uuid";
+import { MutationNotes } from "../../components/note/graphql/mutations";
+import { getAll } from "../../components/note/graphql/queries";
+import { ICard, ICardMaster } from "../../components/note/interface";
+import { CommonHelper } from "../../share/common";
+import { IDefaultContext } from "./interface";
 
 const defaultValue: IDefaultContext = {
   noteData: {
     switchUI: 1,
     list: [
       {
-        id: "0",
+        uuid: uuid(),
         title: "",
         time: new Date(),
         description: "",
         value: "",
       },
     ],
+    textarea: "",
   },
 
   noteAction: {
     setSwitchUI: (number: number) => {},
-    handleClickRemove: () => {},
     setCardActive: (id) => {},
+    setTextarea: (data) => {},
+    setList: (data: ICard[]) => {},
+    handleClickRemove: () => {},
     handleClickCard: (data) => {},
     handleClickAdd: () => {},
     handleFocusContent: () => {},
+    handleChangeText: (cb: any, value: string) => {},
+    handleClickSubmit: () => {},
   },
 };
 
 const NoteContext = createContext(defaultValue);
 
-export const NoteProvider = ({ children }: any) => {
+export const NoteProvider = ({ children, client }: any) => {
+  const alert = useAlert();
   const [switchUI, setSwitchUI] = useState(1);
-  const [list, setList] = useState([...defaultValue.noteData.list]);
-  const [listTextarea, setListTextarea] = useState([
-    ...defaultValue.noteData.list,
-  ]);
-  const [cardActive, setCardActive] = useState<string | undefined>(undefined);
+  const [list, setList] = useState<ICard[]>([]);
+  const [textarea, setTextarea] = useState("");
+  const [cardActive, setCardActive] = useState<string | undefined>("0");
+  const { error, data } = useQuery(getAll());
+  const [create, { data: dataMutation, error: errorMutation }] = useMutation(
+    MutationNotes.mutationCreate
+  );
+  const [removeAll, { data: dataMutationRemove }] = useMutation(
+    MutationNotes.mutationDeleteAll
+  );
+
+  useEffect(() => {
+    if (data) {
+      alert.success("Fetch success!!");
+      const dataNotes = prepareDataList(data?.getAll);
+      setList(dataNotes);
+    }
+
+    if (error) {
+      alert.error(error.message);
+    }
+  }, [error, data, alert]);
+
+  const prepareDataList = (data: ICardMaster[]) => {
+    return data?.map((i) => {
+      const { time, uuid, value } = i;
+      const { title, description } = CommonHelper.prepareDataList(value);
+
+      return {
+        uuid,
+        time,
+        title,
+        description,
+        value,
+      };
+    });
+  };
 
   const onClickRemoveCard = (id: string | undefined) => {
     if (list.length) {
-      const index = list.findIndex((i) => i.id === id);
-      setList((list) => {
-        return [...list.slice(0, index), ...list.slice(index + 1)];
-      });
+      const index = list.findIndex((i) => i.uuid === id);
+      index > -1 &&
+        setList((list) => {
+          return [...list.slice(0, index), ...list.slice(index + 1)];
+        });
     }
   };
+
+  const handleClickSubmit = () => {
+    if (!list?.length) {
+      removeAll();
+
+      return;
+    }
+    create(MutationNotes.getVariables(list));
+  };
+
+  useEffect(() => {
+    if (dataMutation) {
+      alert.success(`Create success ${dataMutation.createNotes.length} notes`);
+    }
+
+    if (errorMutation) {
+      alert.error(errorMutation.message);
+    }
+  }, [errorMutation, dataMutation, alert]);
+
+  useEffect(() => {
+    if (dataMutationRemove) {
+      alert.success(
+        `Remove success ${dataMutationRemove.removeAll.count} notes`
+      );
+    }
+  }, [dataMutationRemove, alert]);
 
   const handleClickRemove = () => {
     if (cardActive) {
       onClickRemoveCard(cardActive);
       setCardActive(undefined);
+      setTextarea("");
     }
   };
 
   const handleClickCard = (props: ICard) => {
     return (event: Event) => {
-      if (cardActive !== props.id) {
-        setCardActive(props.id);
+      if (cardActive !== props.uuid) {
+        setCardActive(props.uuid);
+        const { value } = list.find((i) => i.uuid === props.uuid) || {};
+        setTextarea(value || "");
       }
     };
   };
 
   const handleClickAdd = () => {
-    const dataNew = {
-      ...defaultValue.noteData.list[0],
-      id: list.length.toString(),
-    };
-    setList([...list, dataNew]);
+    const checkEmptyCard = list.find((i) => !i.value);
+
+    if (!checkEmptyCard) {
+      const dataNew = {
+        ...defaultValue.noteData.list[0],
+        uuid: uuid(),
+      };
+      setList([dataNew, ...list]);
+      handleCardUpdate(dataNew);
+    }
+  };
+
+  const handleCardUpdate = (card: ICard) => {
+    setCardActive(card.uuid);
+    setTextarea(card.value);
   };
 
   const handleFocusContent = () => {
     if (!list.length) {
-      setList([...defaultValue.noteData.list]);
+      const { list: defaultData } = defaultValue.noteData;
+      setList(() => [...defaultData]);
+      handleCardUpdate(defaultData[0]);
+    }
+
+    if (list.length && !cardActive) {
+      handleCardUpdate(list[0]);
     }
   };
 
-  const value = {
+  const handleChangeText = (cb: any, value: string) => {
+    cb(value);
+    // setList();
+  };
+
+  const noteContextValue = {
     noteData: {
       cardActive,
       switchUI,
       list,
+      textarea,
     },
     noteAction: {
-      handleClickRemove,
-      setCardActive,
+      setList,
       setSwitchUI,
-      handleClickCard,
+      setTextarea,
+      setCardActive,
       handleClickAdd,
+      handleClickCard,
+      handleChangeText,
+      handleClickSubmit,
+      handleClickRemove,
       handleFocusContent,
     },
   };
 
-  return <NoteContext.Provider value={value}>{children}</NoteContext.Provider>;
+  return (
+    <NoteContext.Provider value={noteContextValue}>
+      {children}
+    </NoteContext.Provider>
+  );
 };
 
 export default NoteContext;

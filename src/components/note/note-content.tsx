@@ -1,25 +1,53 @@
-import React, { useContext, useState } from "react";
+import moment from "moment";
+import React, { useContext } from "react";
 import NoteContext from "../../contexts/NoteContext";
+import { CommonHelper } from "../../share/common";
 import { ILayoutProps } from "../../share/interface";
 import styles from "./styles.module.css";
 
 export interface INoteContentComponent extends ILayoutProps {}
 
 const NoteContent: React.FC<INoteContentComponent> = () => {
-  const { noteAction } = useContext(NoteContext);
-  const [value, setValue] = useState("");
+  const { noteAction, noteData } = useContext(NoteContext);
 
   const handleChange = (event: any) => {
-    setValue(event.target.value);
+    const currentText = event.target.value;
+    noteAction.handleChangeText(noteAction.setTextarea, currentText);
+
+    const updateCard = noteData.list.map((i) => {
+      if (i.uuid === noteData.cardActive) {
+        const { title, description } =
+          CommonHelper.prepareDataList(currentText);
+
+        return {
+          ...i,
+          time: new Date(),
+          title,
+          description,
+          value: currentText,
+        };
+      }
+
+      return {
+        ...i,
+      };
+    });
+    noteAction.setList(updateCard);
   };
 
   return (
     <>
       <div className="container h-full mx-auto">
+        <h2 className="text-center">
+          {noteData.list.find((i) => i.uuid === noteData.cardActive)?.time &&
+            moment(
+              noteData.list.find((i) => i.uuid === noteData.cardActive)?.time
+            ).toLocaleString()}
+        </h2>
         <div className="flex h-full flex-row">
           <textarea
             className={`h-full w-full ${styles.textarea}`}
-            value={value}
+            value={noteData.textarea}
             onChange={handleChange}
             onFocus={noteAction.handleFocusContent}
           />

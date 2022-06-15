@@ -15,7 +15,7 @@ const UiForGrid: React.FC<INoteForGridContainer> = (components) => {
           <div className="basis-1/3 px-2" key={`listCard_${index}`}>
             <CardNote
               {...i}
-              isActive={noteData.cardActive === i.id}
+              isActive={noteData.cardActive === i.uuid}
               onClickCard={noteAction.handleClickCard(i)}
             />
           </div>

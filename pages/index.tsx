@@ -1,22 +1,14 @@
-import type { NextPage } from "next";
-import Head from "next/head";
-import styles from "../styles/Home.module.css";
+import ClientOnly from "../src/components/client-apollo";
+import AppleNoteComponent from "../src/components/note";
+import { NoteProvider } from "../src/contexts/NoteContext";
 
-const Home: NextPage = () => {
+const AppleNote = () => {
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>Clone apple note</title>
-        <meta
-          name="description"
-          content="Clone apple note with nextJS and tailwind"
-        />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <main className={styles.main}></main>
-    </div>
+    <ClientOnly>
+      <NoteProvider>
+        <AppleNoteComponent />
+      </NoteProvider>
+    </ClientOnly>
   );
 };
-
-export default Home;
+export default AppleNote;

@@ -5,7 +5,7 @@ import { NOTE_BACKEND_ENDPOINT } from "../src/share/config";
 import "../styles/globals.css";
 
 const client = new ApolloClient({
-  uri: NOTE_BACKEND_ENDPOINT,
+  uri: `${NOTE_BACKEND_ENDPOINT}/note/graphql`,
   cache: new InMemoryCache(),
 });
 

@@ -7,7 +7,6 @@ import { getAll } from "../../components/note/graphql/queries";
 import { ICard, ICardMaster } from "../../components/note/interface";
 import { CommonHelper } from "../../share/common";
 import { IDefaultContext } from "./interface";
-
 const defaultValue: IDefaultContext = {
   noteData: {
     switchUI: 1,
@@ -21,6 +20,7 @@ const defaultValue: IDefaultContext = {
       },
     ],
     textarea: "",
+    loading: false,
   },
 
   noteAction: {
@@ -45,7 +45,7 @@ export const NoteProvider = ({ children, client }: any) => {
   const [list, setList] = useState<ICard[]>([]);
   const [textarea, setTextarea] = useState("");
   const [cardActive, setCardActive] = useState<string | undefined>("0");
-  const { error, data } = useQuery(getAll());
+  const { error, loading, data } = useQuery(getAll());
   const [create, { data: dataMutation, error: errorMutation }] = useMutation(
     MutationNotes.mutationCreate
   );
@@ -96,7 +96,7 @@ export const NoteProvider = ({ children, client }: any) => {
 
       return;
     }
-    create(MutationNotes.getVariables(list));
+    create(MutationNotes.getVariables([...list].filter((i) => i.value)));
   };
 
   useEffect(() => {
@@ -128,9 +128,14 @@ export const NoteProvider = ({ children, client }: any) => {
   const handleClickCard = (props: ICard) => {
     return (event: Event) => {
       if (cardActive !== props.uuid) {
-        setCardActive(props.uuid);
-        const { value } = list.find((i) => i.uuid === props.uuid) || {};
-        setTextarea(value || "");
+        const card = list.find((i) => i.uuid === props.uuid);
+        handleCardUpdate(card);
+      }
+
+      if (cardActive === props.uuid) {
+        const card = list.find((i) => i.uuid === props.uuid);
+        setSwitchUI(1);
+        handleCardUpdate(card);
       }
     };
   };
@@ -145,11 +150,21 @@ export const NoteProvider = ({ children, client }: any) => {
       };
       setList([dataNew, ...list]);
       handleCardUpdate(dataNew);
+
+      return;
+    }
+
+    if (alert) {
+      alert.show("Cannot create new when there is an empty note!");
     }
   };
 
-  const handleCardUpdate = (card: ICard) => {
-    setCardActive(card.uuid);
+  const handleCardUpdate = (card?: ICard) => {
+    if (!card || !card.uuid) {
+      return;
+    }
+
+    cardActive !== card.uuid && setCardActive(card.uuid);
     setTextarea(card.value);
   };
 
@@ -160,7 +175,7 @@ export const NoteProvider = ({ children, client }: any) => {
       handleCardUpdate(defaultData[0]);
     }
 
-    if (list.length && !cardActive) {
+    if (list.length && !list.some((i) => i.uuid === cardActive)) {
       handleCardUpdate(list[0]);
     }
   };
@@ -176,6 +191,7 @@ export const NoteProvider = ({ children, client }: any) => {
       switchUI,
       list,
       textarea,
+      loading,
     },
     noteAction: {
       setList,

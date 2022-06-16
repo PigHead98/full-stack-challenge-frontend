@@ -6,6 +6,7 @@ export interface IDefaultContext {
     list: ICard[];
     cardActive?: string;
     textarea: string;
+    loading: boolean;
   };
   noteAction: {
     setSwitchUI: (number: number) => void;

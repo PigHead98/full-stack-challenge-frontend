@@ -24,7 +24,7 @@ export const CardNote: React.FC<ICardProps> = (props) => {
       }`}
       onClick={onClickCard}
     >
-      <div className={styles.title}>{title.substring(0, 20) || "New Note"}</div>
+      <div className={styles.title}>{title || "New Note"}</div>
       <p>
         <span>{moment(time).format("hh:mm A")}</span> &nbsp;&nbsp;
         <span className={[styles.description].join(" ")}>

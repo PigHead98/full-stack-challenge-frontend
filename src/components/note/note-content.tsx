@@ -32,7 +32,11 @@ const NoteContent: React.FC<INoteContentComponent> = () => {
         ...i,
       };
     });
-    noteAction.setList(updateCard);
+    noteAction.setList(
+      updateCard.sort(
+        (a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()
+      )
+    );
   };
 
   return (
